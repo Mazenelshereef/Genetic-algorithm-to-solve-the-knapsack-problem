@@ -238,7 +238,18 @@ int main()
         ll finalFitness =calfitness(bestOne,vec);
         ll finalWeight = calweight(bestOne,vec);
         ll finalNumElements = calNumElements(bestOne);
-        cout<<finalFitness<<" "<<finalWeight<<" "<<finalNumElements<<endl;
+        cout<<"Number of selected items: "<<finalNumElements<<endl;
+        cout<<"Total Weight: "<<finalWeight<<endl;
+        cout<<"Total Value: "<<finalFitness<<endl;
+        cout<<"Items Selected: "<<endl;
+        for(int i=0; i<bestOne.size(); i++)
+        {
+            if(bestOne[i]==1)
+            {
+                cout<<"["<<"Value="<<vec[i].second<<", "<<"Weight="<<vec[i].first<<"]"<<endl;
+            }
+        }
+
     }
     return 0;
 }
