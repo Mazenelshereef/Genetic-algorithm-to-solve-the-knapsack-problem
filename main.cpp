@@ -54,23 +54,25 @@ pair<ll, vector<ll> > a7sanwa7d(vector<pair<ll, vector<ll> > > x)
     return x[x.size()-1];
 }
 
+const int populationSize = 200;
+ll knapSackSize, numItems, x, y, counter = 0;
+ll random, parent1, parent2, numGenerations = 100;
+pair<ll, vector<ll> > firstchild1,secondchild2;
+vector<pair<ll, vector<ll> > > candidates;
+vector<ll> chromosomesFitness, chromosomesCumulativeFitness;
+vector<ll> firstparent, secondparent, firstchild, secondchild;
+vector<std::pair<ll, ll> > vec;
 int main()
 {
 
     cin >> numtest;
     for (int z = 0; z < numtest; ++z)
     {
-        const int populationSize = 200;
-        ll knapSackSize, numItems, x, y, counter = 0, counter2 = 0, counter3 = 0;
-        ll random, parent1, parent2, numGenerations = 10;
-        pair<ll, vector<ll> > chromosome[populationSize];
-        pair<ll, vector<ll> > firstchild1,secondchild2;
-        vector<pair<ll, vector<ll> > > candidates;
-        vector<ll> chromosomesWeight, chromosomesNoOfItems, chromosomesFitness, chromosomesCumulativeFitness;
-        vector<ll> firstparent, secondparent, firstchild, secondchild;
+        counter=0;
+        std::pair<ll, vector<ll> > chromosome[populationSize];
+        firstparent.clear();secondparent.clear();firstchild.clear();secondchild.clear();candidates.clear();
+        chromosomesFitness.clear();chromosomesCumulativeFitness.clear();vec.clear();
         pair<ll, ll> pair;
-        vector<std::pair<ll, ll> > vec;
-
         cin >> knapSackSize;
         cin >> numItems;
         for (int i = 0; i < numItems; ++i)
@@ -109,18 +111,12 @@ int main()
             for (int j = 0; j < populationSize; j++)
             {
                 counter = 0;
-                counter2 = 0;
-                counter3 = 0;
                 for (int k = 0; k < numItems; k++)
                 {
                     counter += (chromosome[j].second[k]) * (vec[k].second); // fitness(value)
-                    counter2 += (chromosome[j].second[k]) * (vec[k].first); // weight
-                    counter3 += (chromosome[j].second[k]) * 1;              // number of items
                 }
                 chromosome[j].first = counter;
                 chromosomesFitness.push_back(counter);
-                chromosomesWeight.push_back(counter2);
-                chromosomesNoOfItems.push_back(counter3);
             }
             // calculating cumulative fitness
             chromosomesCumulativeFitness = chromosomesFitness;
@@ -238,6 +234,8 @@ int main()
         ll finalFitness =calfitness(bestOne,vec);
         ll finalWeight = calweight(bestOne,vec);
         ll finalNumElements = calNumElements(bestOne);
+        cout<<""<<endl;
+        cout<<"------------------------------------------"<<"TestCase "<<z+1<<endl;
         cout<<"Number of selected items: "<<finalNumElements<<endl;
         cout<<"Total Weight: "<<finalWeight<<endl;
         cout<<"Total Value: "<<finalFitness<<endl;
@@ -249,7 +247,7 @@ int main()
                 cout<<"["<<"Value="<<vec[i].second<<", "<<"Weight="<<vec[i].first<<"]"<<endl;
             }
         }
-
+        cout<<"------------------------------------------------------"<<endl;
     }
     return 0;
 }
