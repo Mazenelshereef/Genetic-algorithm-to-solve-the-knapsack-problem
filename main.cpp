@@ -54,22 +54,23 @@ pair<ll, vector<ll> > a7sanwa7d(vector<pair<ll, vector<ll> > > x)
     return x[x.size()-1];
 }
 
-const int populationSize = 200;
+const int populationSize = 1000;
 ll knapSackSize, numItems, x, y, counter = 0;
-ll random, parent1, parent2, numGenerations = 100;
+ll random, numGenerations = 200;
 pair<ll, vector<ll> > firstchild1,secondchild2;
-vector<pair<ll, vector<ll> > > candidates;
+vector<pair<ll, vector<ll>>> candidates;
 vector<ll> chromosomesFitness, chromosomesCumulativeFitness;
 vector<ll> firstparent, secondparent, firstchild, secondchild;
 vector<std::pair<ll, ll> > vec;
 int main()
 {
-
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
     cin >> numtest;
     for (int z = 0; z < numtest; ++z)
     {
         counter=0;
-        std::pair<ll, vector<ll> > chromosome[populationSize];
+        vector<pair<ll, vector<ll> >> chromosome(populationSize);
         firstparent.clear();secondparent.clear();firstchild.clear();secondchild.clear();candidates.clear();
         chromosomesFitness.clear();chromosomesCumulativeFitness.clear();vec.clear();
         pair<ll, ll> pair;
@@ -84,6 +85,7 @@ int main()
         for (int k = 0; k < populationSize; k++)
         {
             ll weight = 0;
+            //initialization loop
             for (int j = 0; j < numItems; j++)
             {
                 random = rand() % 2; // random  0 or 1
@@ -103,66 +105,63 @@ int main()
                 }
             }
         }
+        // applying fitness function
+        for (int j = 0; j < populationSize; j++)
+        {
+            counter = 0;
+            for (int k = 0; k < numItems; k++)
+            {
+                counter += (chromosome[j].second[k]) * (vec[k].second); // fitness(value)
+            }
+            chromosome[j].first = counter;
+            chromosomesFitness.push_back(counter);//not important(just to get size)
+        }
+
 
         // loop for generations
-        for(int j = 0; j < numGenerations; j++)
+        for(int g = 0; g < numGenerations; g++)
         {
-            // applying fitness function
-            for (int j = 0; j < populationSize; j++)
-            {
-                counter = 0;
-                for (int k = 0; k < numItems; k++)
-                {
-                    counter += (chromosome[j].second[k]) * (vec[k].second); // fitness(value)
-                }
-                chromosome[j].first = counter;
-                chromosomesFitness.push_back(counter);
-            }
+            firstparent.clear();secondparent.clear();
             // calculating cumulative fitness
-            chromosomesCumulativeFitness = chromosomesFitness;
-            chromosomesCumulativeFitness[0] == chromosomesFitness[0];
+            chromosomesCumulativeFitness = chromosomesFitness;//only to fill the list
+            chromosomesCumulativeFitness[0] = chromosome[0].first;//first cumulative fitness = first fitness
             for (int k = 1; k < populationSize; k++)
             {
-                chromosomesCumulativeFitness[k] = chromosomesFitness[k] + chromosomesCumulativeFitness[k - 1];
+                chromosomesCumulativeFitness[k] = chromosome[k].first + chromosomesCumulativeFitness[k - 1];
             }
-
             // choosing first parent
             int r1 = rand() % (chromosomesCumulativeFitness[populationSize - 1] - 0 + 1) + 0;
 
             if (r1 >= 0 && r1 < chromosomesCumulativeFitness[0])
             {
-                parent1 = 0;
                 firstparent = chromosome[0].second;
             }
             for (int k = 1; k < chromosomesCumulativeFitness.size(); k++)
             {
                 if (r1 >= chromosomesCumulativeFitness[k - 1] && r1 < chromosomesCumulativeFitness[k])
                 {
-                    parent1 = k;
                     firstparent = chromosome[k].second;
                     break;
                 }
             }
             // choosing second parent
             int r2 = rand() % (chromosomesCumulativeFitness[populationSize - 1] - 0 + 1) + 0;
-            if (r1 >= 0 && r1 < chromosomesCumulativeFitness[0])
+            if (r2 >= 0 && r2 < chromosomesCumulativeFitness[0])
             {
-                parent2 = 0;
                 secondparent = chromosome[0].second;
             }
             for (int k = 1; k < chromosomesCumulativeFitness.size(); k++)
             {
                 if (r2 >= chromosomesCumulativeFitness[k - 1] && r2 < chromosomesCumulativeFitness[k])
                 {
-                    parent2 = k;
                     secondparent = chromosome[k].second;
                     break;
                 }
             }
             int xc = rand() % ((chromosomesCumulativeFitness.size() - 1) - 1 + 1) + 1;
             int rc = rand() % (numItems-2 + 1) + 1; // random between 0 and 1
-            int pc = 0.7;
-            int pm = 0.1;
+            int pc = 0.7;//constant
+            int pm = 0.1;//constant
 
             if (rc <= pc) // crossover
             {
@@ -207,10 +206,9 @@ int main()
                     secondchild[i] = 0;
                 }
             }
-            int n = sizeof(chromosome)/sizeof(chromosome[0]);
-            std::sort(chromosome, chromosome + n);
-            ll ff = calfitness(firstchild, vec);  // first fitness
-            ll sf = calfitness(secondchild, vec); // second fitness
+            std::sort(chromosome.begin(), chromosome.end());
+            ll ff = calfitness(firstchild, vec);  // first child fitness
+            ll sf = calfitness(secondchild, vec); // second child fitness
             firstchild1.first = ff;
             secondchild2.first = sf;
             firstchild1.second = firstchild;
@@ -228,8 +226,7 @@ int main()
                 chromosome[1]=candidates[3];
             }
         }
-        int n = sizeof(chromosome)/sizeof(chromosome[0]);
-        std::sort(chromosome, chromosome + n);
+        std::sort(chromosome.begin(), chromosome.end());
         vector <ll> bestOne= chromosome[populationSize-1].second;
         ll finalFitness =calfitness(bestOne,vec);
         ll finalWeight = calweight(bestOne,vec);
